@@ -2,6 +2,12 @@
 
 A full-stack flashcard app for studying — flip cards to reveal answers, navigate between them, and add/edit/delete your own flashcards. Built with a Spring Boot REST API backend and a vanilla JavaScript frontend.
 
+# Screenshots 
+<img width="325" height="400" alt="Screenshot 2026-08-02 232200" src="https://github.com/user-attachments/assets/c85cd4e6-4749-43d6-837c-eea04ef60f2e" />
+<img width="325" height="400" alt="Screenshot 2026-08-02 232853" src="https://github.com/user-attachments/assets/2c1e3a08-ecf9-4f4a-97b4-eb47e8c12c90" />
+<img width="325" height="400" alt="Screenshot 2026-08-02 232821" src="https://github.com/user-attachments/assets/a6a62082-3cda-4abd-8ba0-7225cce614c4" />
+
+
 ## Features
 
 - Flip any card to reveal its answer
