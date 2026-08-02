@@ -56,7 +56,7 @@ flashcard-quiz-app/
 
 1. Clone the repo:
    ```
-   git clone https://github.com/YOUR_USERNAME/flashcard-quiz-app.git
+   git clone https://github.com/singhgaurav7905/CodeAlpha_Flashcard-Quiz-App.git
    cd flashcard-quiz-app
    ```
 
