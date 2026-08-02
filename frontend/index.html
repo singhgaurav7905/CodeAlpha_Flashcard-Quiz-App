@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcard Quiz App</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+  }
+
+  body {
+    background: #f2f4f7;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  h1 {
+    text-align: center;
+    color: #2b2d42;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 30px;
+    font-size: 14px;
+  }
+
+  .card-counter {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 14px;
+    font-size: 14px;
+  }
+
+  .flashcard {
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    padding: 40px 30px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 20px;
+    color: #2b2d42;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  .flashcard:active {
+    transform: scale(0.99);
+  }
+
+  .flashcard.answer {
+    background: #e8f0fe;
+  }
+
+  .flashcard .label {
+    position: absolute;
+    margin-top: -90px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8892a0;
+  }
+
+  .nav-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 22px;
+  }
+
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .btn-primary {
+    background: #4361ee;
+    color: white;
+  }
+  .btn-primary:hover { background: #3651d4; }
+
+  .btn-secondary {
+    background: #e9ecef;
+    color: #2b2d42;
+  }
+  .btn-secondary:hover { background: #dde1e6; }
+
+  .btn-danger {
+    background: #fdeaea;
+    color: #d64545;
+  }
+  .btn-danger:hover { background: #f9d5d5; }
+
+  .empty-state {
+    text-align: center;
+    color: #6c757d;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  }
+
+  .manage-section {
+    margin-top: 40px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    padding: 24px;
+  }
+
+  .manage-section h2 {
+    font-size: 16px;
+    color: #2b2d42;
+    margin-bottom: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 12px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 4px;
+  }
+
+  .form-group input, .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dde1e6;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+  }
+
+  .form-group textarea {
+    min-height: 60px;
+  }
+
+  .form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .card-list {
+    margin-top: 24px;
+    border-top: 1px solid #eee;
+    padding-top: 16px;
+  }
+
+  .card-list h3 {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 10px;
+  }
+
+  .card-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 10px;
+  }
+
+  .card-list-item .q-text {
+    font-size: 14px;
+    color: #2b2d42;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-list-item .actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .card-list-item button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <h1>Flashcard Quiz</h1>
+  <p class="subtitle">Click a card to flip it. Manage your deck below.</p>
+
+  <div id="cardCounter" class="card-counter"></div>
+  <div id="cardArea"></div>
+
+  <div class="nav-row" id="navRow" style="display:none;">
+    <button class="btn-secondary" id="prevBtn">Previous</button>
+    <button class="btn-primary" id="flipBtn">Show Answer</button>
+    <button class="btn-secondary" id="nextBtn">Next</button>
+  </div>
+
+  <div class="manage-section">
+    <h2 id="formHeading">Add a New Flashcard</h2>
+    <div class="form-group">
+      <label for="questionInput">Question</label>
+      <textarea id="questionInput" placeholder="e.g. What is a hash map?"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="answerInput">Answer</label>
+      <textarea id="answerInput" placeholder="e.g. A data structure that maps keys to values..."></textarea>
+    </div>
+    <div class="form-buttons">
+      <button class="btn-primary" id="saveBtn">Add Flashcard</button>
+      <button class="btn-secondary" id="cancelEditBtn" style="display:none;">Cancel</button>
+    </div>
+
+    <div class="card-list">
+      <h3>All Flashcards</h3>
+      <div id="cardListArea"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---- Data setup ----
+  const API_URL = "http://localhost:8080/api/flashcards";
+
+  let cards = [];
+  let currentIndex = 0;
+  let showingAnswer = false;
+  let editId = null; // null means we're adding, not editing
+
+  async function loadCards() {
+    try {
+      const res = await fetch(API_URL);
+      cards = await res.json();
+    } catch (err) {
+      cardArea.innerHTML = `<div class="empty-state">Could not reach the backend. Make sure the Spring Boot server is running on port 8080.</div>`;
+      console.error("Failed to load flashcards:", err);
+    }
+  }
+
+  async function createCardOnServer(question, answer) {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, answer })
+    });
+    return res.json();
+  }
+
+  async function updateCardOnServer(id, question, answer) {
+    const res = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, answer })
+    });
+    return res.json();
+  }
+
+  async function deleteCardOnServer(id) {
+    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  }
+
+  // ---- Elements ----
+  const cardArea = document.getElementById("cardArea");
+  const cardCounter = document.getElementById("cardCounter");
+  const navRow = document.getElementById("navRow");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const flipBtn = document.getElementById("flipBtn");
+
+  const questionInput = document.getElementById("questionInput");
+  const answerInput = document.getElementById("answerInput");
+  const saveBtn = document.getElementById("saveBtn");
+  const cancelEditBtn = document.getElementById("cancelEditBtn");
+  const formHeading = document.getElementById("formHeading");
+  const cardListArea = document.getElementById("cardListArea");
+
+  // ---- Rendering the active flashcard ----
+  function renderCard() {
+    if (cards.length === 0) {
+      cardArea.innerHTML = `<div class="empty-state">No flashcards yet. Add one below to get started.</div>`;
+      navRow.style.display = "none";
+      cardCounter.textContent = "";
+      return;
+    }
+
+    if (currentIndex >= cards.length) currentIndex = cards.length - 1;
+    if (currentIndex < 0) currentIndex = 0;
+
+    const card = cards[currentIndex];
+    const textToShow = showingAnswer ? card.answer : card.question;
+    const labelText = showingAnswer ? "Answer" : "Question";
+
+    cardArea.innerHTML = `
+      <div class="flashcard ${showingAnswer ? "answer" : ""}" id="flipArea">
+        <div>
+          <div class="label">${labelText}</div>
+          <div>${escapeHtml(textToShow)}</div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("flipArea").addEventListener("click", toggleAnswer);
+
+    navRow.style.display = "flex";
+    cardCounter.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
+    flipBtn.textContent = showingAnswer ? "Show Question" : "Show Answer";
+  }
+
+  function toggleAnswer() {
+    showingAnswer = !showingAnswer;
+    renderCard();
+  }
+
+  function goNext() {
+    if (cards.length === 0) return;
+    currentIndex = (currentIndex + 1) % cards.length;
+    showingAnswer = false;
+    renderCard();
+  }
+
+  function goPrev() {
+    if (cards.length === 0) return;
+    currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+    showingAnswer = false;
+    renderCard();
+  }
+
+  prevBtn.addEventListener("click", goPrev);
+  nextBtn.addEventListener("click", goNext);
+  flipBtn.addEventListener("click", toggleAnswer);
+
+  // ---- Manage list (add / edit / delete) ----
+  function renderCardList() {
+    if (cards.length === 0) {
+      cardListArea.innerHTML = `<p style="color:#adb5bd; font-size:13px;">Your deck is empty.</p>`;
+      return;
+    }
+
+    cardListArea.innerHTML = cards.map((card, i) => `
+      <div class="card-list-item">
+        <div class="q-text">${i + 1}. ${escapeHtml(card.question)}</div>
+        <div class="actions">
+          <button class="btn-secondary" onclick="startEdit(${card.id})">Edit</button>
+          <button class="btn-danger" onclick="deleteCard(${card.id})">Delete</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function startEdit(id) {
+    const card = cards.find(c => c.id === id);
+    if (!card) return;
+
+    editId = id;
+    questionInput.value = card.question;
+    answerInput.value = card.answer;
+    formHeading.textContent = "Edit Flashcard";
+    saveBtn.textContent = "Save Changes";
+    cancelEditBtn.style.display = "inline-block";
+    questionInput.focus();
+  }
+
+  function cancelEdit() {
+    editId = null;
+    questionInput.value = "";
+    answerInput.value = "";
+    formHeading.textContent = "Add a New Flashcard";
+    saveBtn.textContent = "Add Flashcard";
+    cancelEditBtn.style.display = "none";
+  }
+
+  async function deleteCard(id) {
+    const confirmDelete = confirm("Delete this flashcard?");
+    if (!confirmDelete) return;
+
+    await deleteCardOnServer(id);
+    await loadCards();
+
+    if (editId === id) cancelEdit();
+    if (currentIndex >= cards.length) currentIndex = Math.max(0, cards.length - 1);
+
+    showingAnswer = false;
+    renderCard();
+    renderCardList();
+  }
+
+  saveBtn.addEventListener("click", async () => {
+    const q = questionInput.value.trim();
+    const a = answerInput.value.trim();
+
+    if (!q || !a) {
+      alert("Please fill in both the question and the answer.");
+      return;
+    }
+
+    if (editId === null) {
+      await createCardOnServer(q, a);
+      currentIndex = cards.length; // will point to the new last card after reload
+    } else {
+      await updateCardOnServer(editId, q, a);
+    }
+
+    await loadCards();
+    cancelEdit();
+    showingAnswer = false;
+    renderCard();
+    renderCardList();
+  });
+
+  cancelEditBtn.addEventListener("click", cancelEdit);
+
+  // ---- Small helper to avoid breaking HTML on special characters ----
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ---- Init ----
+  async function init() {
+    await loadCards();
+    renderCard();
+    renderCardList();
+  }
+
+  init();
+</script>
+
+</body>
+</html>

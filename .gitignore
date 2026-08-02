@@ -1,0 +1,25 @@
+# Maven build output
+backend/target/
+
+# Compiled class files
+*.class
+
+# H2 database files (local data, shouldn't be committed)
+backend/data/
+*.mv.db
+*.trace.db
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
